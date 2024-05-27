@@ -43,13 +43,14 @@ public class FabricaDeTrajes implements IFabricaDeTrajes, Serializable {
         }
     }
 
-    private TreeSet<Traje> cargarTrajes() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("trajes.dat"))) {
-            Object obj = ois.readObject();
-            if (obj instanceof TreeSet<?>) {
-                TreeSet<?> set = (TreeSet<?>) obj;
-                TreeSet<Traje> trajes = new TreeSet<>(new TrajeComparator());
-                for (Object item : set) {
+    private TreeSet<Traje> cargarTrajes() { //Declara un método privado llamado cargarTrajes que no toma parámetros y devuelve un TreeSet de objetos Traje.
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("trajes.dat"))) { //ObjectInputStream Garantiza que los tipos de todos los objetos creados a partir de la secuencia
+            //coincidan con las clases presentes como los datos se guardaron en bytes se utiliza 'FileinputStream' que Es la clase que se utiliza para leer bytes desde un archivo de "trajes.dat"
+            Object obj = ois.readObject(); //Lee un objeto desde el flujo de entrada y lo asigna a la variable obj.
+            if (obj instanceof TreeSet<?>) { //Verifica si el objeto leído es una instancia de TreeSet de cualquier tipo (<?>).
+                TreeSet<?> set = (TreeSet<?>) obj; //Convierte el objeto a un TreeSet de tipo genérico.
+                TreeSet<Traje> trajes = new TreeSet<>(new TrajeComparator()); //Crea un nuevo TreeSet de Traje usando un comparador personalizado TrajeComparator.
+                for (Object item : set) { //Itera sobre cada elemento en el conjunto genérico.  Verifica si cada elemento es una instancia de Traje.   Si es un Traje, lo agrega al nuevo conjunto trajes.
                     if (item instanceof Traje) {
                         trajes.add((Traje) item);
                     } else {
@@ -88,7 +89,9 @@ public class FabricaDeTrajes implements IFabricaDeTrajes, Serializable {
         scanner.nextLine(); // Consumir nueva línea
 
         // Validar si el ID ya existe
-        if (componentesEnAlmacen.stream().anyMatch(c -> c.getId() == id)) {
+        if (componentesEnAlmacen.stream().anyMatch(c -> c.getId() == id)) { //componentesEnAlmacen.stream() convierte la colección componentesEnAlmacen en un flujo de objetos Componente.
+            //.anyMatch es una operación de terminal del stream que toma un predicado (una función que devuelve un booleano) y devuelve true si al menos un elemento en el flujo cumple con la condición especificada por el predicado.
+            //c representa cada elemento del flujo a medida que se itera sobre él.   c.getId() obtiene el identificador (ID) del objeto c.
             throw new IdException("El ID ya existe.");
         }
 
@@ -106,6 +109,7 @@ public class FabricaDeTrajes implements IFabricaDeTrajes, Serializable {
 
         // Validar número de componentes extracomunitarios
         long numComunitarios = componentesEnAlmacen.stream().filter(Componente::isEsComunitario).count();
+        //es lo mismo que usar esto "componente -> componente.isEsComunitario()" donde isEsComunitario() devuelve cada elemento que filtre en true y count cuenta el numero de elementos en el flujo luego de aplicar los filtros"
         if (esComunitario && numComunitarios >= componentesEnAlmacen.size() / 2.0) {
             throw new MuchoExtracomunitarioException("Más del 50% de los componentes son comunitarios.");
         }
@@ -166,7 +170,9 @@ public class FabricaDeTrajes implements IFabricaDeTrajes, Serializable {
     }
 
     @Override
-    public Optional<Componente> obtenerComponente(Predicate<Componente> criterio) {
+    public Optional<Componente> obtenerComponente(Predicate<Componente> criterio){ //Optional es una clase contenedora en Java que puede o no contener un valor no nulo. Se utiliza para evitar valores nulos y posibles excepciones NullPointerException
+        //Optional<Componente> significa que el método devolverá un Optional que puede contener un objeto de tipo Componente, o estar vacío si no se encuentra ningún componente que coincida con el criterio.
+        //Predicate<Componente> significa que el predicado toma un objeto de tipo Componente como entrada y devuelve true o false.
         for (Componente componente : componentesEnAlmacen) {
             if (criterio.test(componente)) {
                 return Optional.of(componente);
@@ -192,7 +198,9 @@ public class FabricaDeTrajes implements IFabricaDeTrajes, Serializable {
 
     @Override
     public void eliminarComponente(Componente componente) throws IOException {
-        componentesEnAlmacen.removeIf(c -> c.equals(componente));
+        componentesEnAlmacen.removeIf(c -> c.equals(componente)); //c es una variable que representa cada elemento de la colección componentesEnAlmacen a medida que se itera sobre ella.
+        //c.equals(componente) es la condición del predicado. Aquí, se llama al método equals en c para comprobar si c es igual a componente.
+        //Si c.equals(componente) devuelve true, significa que c es igual al objeto componente, y dicho elemento será eliminado de la colección.
         guardarTodosLosComponentes();
     }
 
@@ -202,7 +210,10 @@ public class FabricaDeTrajes implements IFabricaDeTrajes, Serializable {
         String nombre = scanner.nextLine();
 
         // Verificar si el traje ya existe
-        for (Traje traje : trajesEnAlmacen) {
+        for (Traje traje : trajesEnAlmacen) { //Esta es la sintaxis específica del bucle for-each
+            //Traje : Es el tipo de elementos en la colección trajesEnAlmacen. Esto indica que trajesEnAlmacen es una colección (por ejemplo, una lista o un conjunto) de objetos de tipo Traje.
+            //traje: Es el nombre de la variable que se usará dentro del cuerpo del bucle para referirse a cada elemento individual de la colección trajesEnAlmacen. Cada vez que el bucle itera, traje representa el siguiente elemento en la colección.
+            // : trajes almacen: es decir para traje : "en" trajesEnAlmacen
             if (traje.getNombre().equalsIgnoreCase(nombre)) {
                 throw new TrajeYaExisteException("El traje ya existe en el almacén.");
             }

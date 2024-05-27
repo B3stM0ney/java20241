@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 
 public interface IFabricaDeTrajes {
     void añadirComponenteAAlmacen() throws IdException, MuchoExtracomunitarioException, MangaException, IOException;
-    List<Componente> listarComponentes();
+    List<Componente> listarComponentes(); //lista en la coleccion componentes (listar)
     Optional<Componente> obtenerComponente(Predicate<Componente> criterio);
     void actualizarComponente(Componente componenteAntiguo, Componente componenteNuevo) throws IdException, MuchoExtracomunitarioException, MangaException, IOException;
     void eliminarComponente(Componente componente) throws IOException;
